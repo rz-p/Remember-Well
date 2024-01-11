@@ -13,46 +13,44 @@ public class DifficultyController : MonoBehaviour
 
     public GameObject fieldsObject; // Assign this in the inspector
 
+    public GameObject gameSetupPanel;
+
     // Button references
     public Button normalButton;
     public Button hardButton;
     public Button customButton;
 
     public static Difficulty selectedDifficulty;
-    public static int customGridWidth = 4; // Default value
-    public static int customGridHeight = 4; // Default value
+    public static int gridWidth = 4; // Default value
+    public static int gridHeight = 4; // Default value
 
-    // Reference to the TMP InputFields
-    public TMP_InputField customWidthInputField;
-    public TMP_InputField customHeightInputField;
+     // Reference to the TMP Dropdowns
+    public TMP_Dropdown widthDropdown;
+    public TMP_Dropdown heightDropdown;
 
     public void SetNormalDifficulty()
     {
         selectedDifficulty = Difficulty.Normal;
+        gridHeight = 4;
+        gridWidth = 4;
         UpdateButtonColors();
     }
 
     public void SetHardDifficulty()
     {
         selectedDifficulty = Difficulty.Hard;
+        gridHeight = 6;
+        gridWidth = 6;
         UpdateButtonColors();
     }
 
-    public void SetCustomDifficulty()
+     public void SetCustomDifficulty()
     {
-        // Validate and set the custom difficulty
-        if (int.TryParse(customWidthInputField.text, out int width) &&
-            int.TryParse(customHeightInputField.text, out int height))
-        {
-            customGridWidth = Mathf.Clamp(width, 1, 6); // Clamping to desired range
-            customGridHeight = Mathf.Clamp(height, 1, 6);
-            selectedDifficulty = Difficulty.Custom;
-            UpdateButtonColors();
-        }
-        else
-        {
-            Debug.LogError("Invalid input for custom grid size.");
-        }
+        // Assuming the dropdown values correspond to actual grid sizes
+        gridWidth = (widthDropdown.value + 1)*2; // +1 if dropdown index starts at 0
+        gridHeight = (heightDropdown.value + 1)*2; // +1 if dropdown index starts at 0
+        selectedDifficulty = Difficulty.Custom;
+        UpdateButtonColors();
     }
 
     private void UpdateButtonColors()
@@ -78,6 +76,7 @@ public class DifficultyController : MonoBehaviour
         }
         fieldsObject.SetActive(false);
         Debug.Log("Selected Difficulty: " + selectedDifficulty);
+        Debug.Log("Grid Size: "+ gridWidth +" by "+ gridHeight);
     }
 
     public void ShowFields()
@@ -85,38 +84,28 @@ public class DifficultyController : MonoBehaviour
         fieldsObject.SetActive(true);
     }
 
-    public void UpdateCustomWidth(string widthInput)
+  public void StartGame()
     {
-        if (int.TryParse(widthInput, out int width))
+        // Deactivate the game setup UI panel
+        if (gameSetupPanel != null)
         {
-            customGridWidth = Mathf.Clamp(width, 1, 6);
+            gameSetupPanel.SetActive(false);
         }
-    }
-
-    public void UpdateCustomHeight(string heightInput)
-    {
-        if (int.TryParse(heightInput, out int height))
+        else
         {
-            customGridHeight = Mathf.Clamp(height, 1, 6);
-        }
-    }
-
-    void StartGame()
-    {
-        switch (DifficultyController.selectedDifficulty)
-        {
-            case Difficulty.Normal:
-                // Set up a 4x4 grid
-                break;
-            case Difficulty.Hard:
-                // Set up a 6x6 grid
-                break;
-            case Difficulty.Custom:
-                // Set up a grid with customGridWidth x customGridHeight
-                break;
+            Debug.LogError("Game setup panel reference not set.");
         }
 
-        // Additional game setup code
+        // Initialize the game
+        GameManager gameManager = FindObjectOfType<GameManager>();
+        if (gameManager != null)
+        {
+            gameManager.InitializeGame();
+        }
+        else
+        {
+            Debug.LogError("GameManager not found in the scene.");
+        }
     }
 
 
