@@ -11,8 +11,8 @@ public class VolumeControl : MonoBehaviour {
 
     void Start()
     {
-        musicSlider.value = PlayerPrefs.GetFloat("Music Volume", 0.75f);
-        gameSlider.value = PlayerPrefs.GetFloat("Game Volume", 0.75f);
+        musicSlider.value = PlayerPrefs.GetFloat("Music Volume", 0.5f);
+        gameSlider.value = PlayerPrefs.GetFloat("Game Volume", 0.5f);
     }
     public void SetMusicVolume (float sliderValue)
     {

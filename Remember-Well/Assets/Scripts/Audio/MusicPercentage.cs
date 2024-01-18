@@ -5,18 +5,22 @@ using UnityEngine.Audio;
 using UnityEngine.UI;
 
 public class AudioPercentage : MonoBehaviour {
-    public Slider musicSlider;
-    public Slider gameSlider;
+    public Slider slider;
     public Text output;
+
+    void Start()
+    {
+        /* slider.value = PlayerPrefs.GetFloat("Music Volume", 0.75f); */
+    }
+
+    void Update()
+    {
+        getMusicPercentage();
+    }
 
     void getMusicPercentage()
     {
-        output.text = PlayerPrefs.GetFloat("Music Volume") + "%";
-    }
-
-    void getGamePercentage()
-    {
-        output.text = PlayerPrefs.GetFloat("Game Volume") + "%";
+        output.text = (Mathf.Round(slider.value * 100)) + "%";
     }
 
 
