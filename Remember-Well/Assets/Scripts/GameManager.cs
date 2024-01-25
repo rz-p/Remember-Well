@@ -13,22 +13,35 @@ public class GameManager : MonoBehaviour
         DifficultyController.Difficulty difficulty = DifficultyController.selectedDifficulty;
         int gridWidth = DifficultyController.gridWidth;
         int gridHeight = DifficultyController.gridHeight;
+        int numPairs = (gridWidth * gridHeight) / 2;
+        // Shuffle or arrange the card front sprites before assigning them to cards
+        List<Sprite> shuffledSprites = ShuffleSprites(cardFrontSprites, numPairs);
 
         // Instantiate the grid based on the difficulty
-        CreateGrid(gridWidth, gridHeight);
+        CreateGrid(gridWidth, gridHeight, shuffledSprites);
     }
 
-    private void CreateGrid(int width, int height)
-    {
-        // Shuffle or arrange the card front sprites before assigning them to cards
-        List<Sprite> shuffledSprites = ShuffleSprites(cardFrontSprites);
 
-        int spriteIndex = 0;
+    private void CreateGrid(int width, int height, List<Sprite> shuffledSprites)
+    {
+        float cardSpacing = 2.0f; // Adjust this value to control the space between cards
+        int spriteIndex = 0; // Initialize sprite index
+
+        // Calculate the total size of the grid
+        float totalWidth = width * (1 + cardSpacing) - cardSpacing;
+        float totalHeight = height * (1 + cardSpacing) - cardSpacing;
+
+        // Set the position of the card parent to center the grid
+        cardParent.transform.position = new Vector3(-totalWidth / 2, -totalHeight / 2, 0);
+
         for (int x = 0; x < width; x++)
         {
             for (int y = 0; y < height; y++)
             {
-                GameObject newCard = Instantiate(gridCellPrefab, new Vector3(x, y, 0), Quaternion.identity);
+                // Calculate position with spacing
+                Vector3 position = new Vector3(x * (1 + cardSpacing), y * (1 + cardSpacing), 0);
+
+                GameObject newCard = Instantiate(gridCellPrefab, position, Quaternion.identity);
                 newCard.transform.SetParent(cardParent.transform, false); // Set the new card's parent
 
                 CardManager cardManager = newCard.GetComponent<CardManager>();
@@ -40,22 +53,41 @@ public class GameManager : MonoBehaviour
             }
         }
     }
+    private List<Sprite> ShuffleSprites(Sprite[] sprites, int numPairs)
+{
+    List<Sprite> selectedSprites = new List<Sprite>();
+    HashSet<int> chosenIndexes = new HashSet<int>();
+    System.Random rng = new System.Random();
 
-    private List<Sprite> ShuffleSprites(Sprite[] sprites)
+    // Randomly select unique sprites
+    while (selectedSprites.Count < numPairs)
     {
-        List<Sprite> shuffledList = new List<Sprite>(sprites);
-        System.Random rng = new System.Random();
-
-        int n = shuffledList.Count;
-        while (n > 1)
+        int randomIndex = rng.Next(sprites.Length);
+        if (!chosenIndexes.Contains(randomIndex))
         {
-            n--;
-            int k = rng.Next(n + 1);
-            Sprite value = shuffledList[k];
-            shuffledList[k] = shuffledList[n];
-            shuffledList[n] = value;
+            selectedSprites.Add(sprites[randomIndex]);
+            chosenIndexes.Add(randomIndex);
         }
-
-        return shuffledList;
     }
+
+    // Duplicate each sprite to create pairs
+    List<Sprite> pairedList = new List<Sprite>(selectedSprites);
+    pairedList.AddRange(selectedSprites);
+
+    // Shuffle the list
+    int n = pairedList.Count;
+    while (n > 1)
+    {
+        n--;
+        int k = rng.Next(n + 1);
+        Sprite value = pairedList[k];
+        pairedList[k] = pairedList[n];
+        pairedList[n] = value;
+    }
+
+    return pairedList;
+}
+
+
+
 }

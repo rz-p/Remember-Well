@@ -15,6 +15,8 @@ public class DifficultyController : MonoBehaviour
 
     public GameObject gameSetupPanel;
 
+    public GameObject playButton;
+
     // Button references
     public Button normalButton;
     public Button hardButton;
@@ -77,6 +79,7 @@ public class DifficultyController : MonoBehaviour
         fieldsObject.SetActive(false);
         Debug.Log("Selected Difficulty: " + selectedDifficulty);
         Debug.Log("Grid Size: "+ gridWidth +" by "+ gridHeight);
+        playButton.SetActive(true);
     }
 
     public void ShowFields()

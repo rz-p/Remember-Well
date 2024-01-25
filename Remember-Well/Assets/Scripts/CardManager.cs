@@ -42,6 +42,7 @@ public class CardManager : MonoBehaviour, IPointerClickHandler
     // Handle click events on the card
     public void OnPointerClick(PointerEventData eventData)
     {
+        Debug.Log("clicked");
         FlipCard();
 
         // Notify GameManager or another script that this card was clicked
