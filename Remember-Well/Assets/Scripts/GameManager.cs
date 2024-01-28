@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour
     public GameObject gridCellPrefab; // Prefab for the grid cells or cards
     public Sprite[] cardFrontSprites; // Array of sprites for the card fronts
     public GameObject cardParent;
+    public GameObject audioController;
 
     private List<CardManager> selectedCards = new List<CardManager>();
 
@@ -126,6 +127,7 @@ public class GameManager : MonoBehaviour
             foreach (CardManager card in selectedCards)
             {
                 card.DisableCard();
+                audioController.GetComponent<SFXController>().PlayCorrect();
             }
 
         }
@@ -136,6 +138,7 @@ public class GameManager : MonoBehaviour
             foreach (CardManager card in selectedCards)
             {
                 card.FlipCard();
+                audioController.GetComponent<SFXController>().PlayFalse();
             }
         }
 
