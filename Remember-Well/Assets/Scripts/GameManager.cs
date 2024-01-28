@@ -7,7 +7,9 @@ public class GameManager : MonoBehaviour
     public GameObject gridCellPrefab; // Prefab for the grid cells or cards
     public Sprite[] cardFrontSprites; // Array of sprites for the card fronts
     public GameObject cardParent;
-
+    public GameObject endGamePanel;
+    private int matchedPairsCount = 0;
+    private int totalPairs;
     private List<CardManager> selectedCards = new List<CardManager>();
 
     public void InitializeGame()
@@ -16,7 +18,7 @@ public class GameManager : MonoBehaviour
         DifficultyController.Difficulty difficulty = DifficultyController.selectedDifficulty;
         int gridWidth = DifficultyController.gridWidth;
         int gridHeight = DifficultyController.gridHeight;
-        int numPairs = (gridWidth * gridHeight) / 2;
+        totalPairs = (gridHeight * gridWidth / 2);
         List<Sprite> shuffledSprites = ShuffleAndPairSprites(cardFrontSprites, gridWidth, gridHeight);
         CreateGrid(gridWidth, gridHeight, shuffledSprites);
     }
@@ -125,6 +127,13 @@ public class GameManager : MonoBehaviour
         if (selectedCards[0].frontSprite == selectedCards[1].frontSprite)
         {
             Debug.Log("Match found!");
+            matchedPairsCount++;
+            Debug.Log("Matched Pairs: " + matchedPairsCount + ", Total Pairs: " + totalPairs);
+            // Check for endgame condition
+            if (matchedPairsCount >= totalPairs)
+            {
+                EndGame();
+            }
             foreach (CardManager card in selectedCards)
             {
                 card.DisableCard();
@@ -156,4 +165,14 @@ public class GameManager : MonoBehaviour
         }
 
     }
+
+    private void EndGame()
+    {
+        if (endGamePanel != null)
+        {
+            endGamePanel.SetActive(true);
+        }
+    }
+
+
 }
