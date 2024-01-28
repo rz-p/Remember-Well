@@ -82,8 +82,6 @@ public class GameManager : MonoBehaviour
         return pairedList;
     }
 
-
-
     public void CardSelected(CardManager card)
     {
         // Prevent selecting more cards if two are already selected
@@ -144,6 +142,7 @@ public class GameManager : MonoBehaviour
         // Clear the list of selected cards
         selectedCards.Clear();
     }
+
     private void SetAllCardsClickable(bool clickable)
     {
         foreach (Transform child in cardParent.transform)
