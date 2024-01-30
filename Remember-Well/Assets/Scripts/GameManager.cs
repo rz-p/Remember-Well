@@ -5,7 +5,8 @@ using System.Collections; // Needed for using List
 public class GameManager : MonoBehaviour
 {
     public GameObject gridCellPrefab; // Prefab for the grid cells or cards
-    public Sprite[] cardFrontSprites; // Array of sprites for the card fronts
+    public Sprite[] animalCardSprites; // Assign in Inspector
+    public Sprite[] plantCardSprites;
     public GameObject cardParent;
 
     public GameObject audioController;
@@ -16,6 +17,15 @@ public class GameManager : MonoBehaviour
 
     public void InitializeGame()
     {
+        Sprite[] cardFrontSprites;
+        if (DifficultyController.selectedTheme == DifficultyController.CardTheme.Animals)
+        {
+            cardFrontSprites = animalCardSprites;
+        }
+        else
+        {
+            cardFrontSprites = plantCardSprites;
+        }
         // Access the difficulty and grid size from DifficultyController
         DifficultyController.Difficulty difficulty = DifficultyController.selectedDifficulty;
         int gridWidth = DifficultyController.gridWidth;

@@ -11,6 +11,15 @@ public class DifficultyController : MonoBehaviour
         Custom
     }
 
+    public enum CardTheme
+    {
+        Animals,
+        Plants
+    }
+
+    public static CardTheme selectedTheme;
+
+
     public GameObject fieldsObject; // Assign this in the inspector
 
     public GameObject gameSetupPanel;
@@ -21,12 +30,18 @@ public class DifficultyController : MonoBehaviour
     public Button normalButton;
     public Button hardButton;
     public Button customButton;
+    // Theme button references
+    public Button animalsButton;
+    public Button plantsButton;
+
+    private bool isDifficultySelected = false;
+    private bool isThemeSelected = false;
 
     public static Difficulty selectedDifficulty;
     public static int gridWidth = 4; // Default value
     public static int gridHeight = 4; // Default value
 
-     // Reference to the TMP Dropdowns
+    // Reference to the TMP Dropdowns
     public TMP_Dropdown widthDropdown;
     public TMP_Dropdown heightDropdown;
 
@@ -35,6 +50,7 @@ public class DifficultyController : MonoBehaviour
         selectedDifficulty = Difficulty.Normal;
         gridHeight = 4;
         gridWidth = 4;
+        isDifficultySelected = true;
         UpdateButtonColors();
     }
 
@@ -43,16 +59,34 @@ public class DifficultyController : MonoBehaviour
         selectedDifficulty = Difficulty.Hard;
         gridHeight = 6;
         gridWidth = 6;
+        isDifficultySelected = true;
         UpdateButtonColors();
     }
 
-     public void SetCustomDifficulty()
+    public void SetCustomDifficulty()
     {
         // Assuming the dropdown values correspond to actual grid sizes
-        gridWidth = (widthDropdown.value + 1)*2; // +1 if dropdown index starts at 0
-        gridHeight = (heightDropdown.value + 1)*2; // +1 if dropdown index starts at 0
+        gridWidth = (widthDropdown.value + 1) * 2; // +1 if dropdown index starts at 0
+        gridHeight = (heightDropdown.value + 1) * 2; // +1 if dropdown index starts at 0
         selectedDifficulty = Difficulty.Custom;
+        isDifficultySelected = true;
         UpdateButtonColors();
+    }
+
+    public void SetThemeToAnimals()
+    {
+        selectedTheme = CardTheme.Animals;
+        isThemeSelected = true;
+        UpdateThemeButtonColors();
+        UpdatePlayButtonStatus();
+    }
+
+    public void SetThemeToPlants()
+    {
+        selectedTheme = CardTheme.Plants;
+        isThemeSelected = true;
+        UpdateThemeButtonColors();
+        UpdatePlayButtonStatus();
     }
 
     private void UpdateButtonColors()
@@ -76,10 +110,33 @@ public class DifficultyController : MonoBehaviour
                 customButton.GetComponent<Image>().color = Color.green;
                 break;
         }
+        if (isThemeSelected)
+        {
+            UpdateThemeButtonColors();
+        }
+
+        UpdatePlayButtonStatus();
         fieldsObject.SetActive(false);
         Debug.Log("Selected Difficulty: " + selectedDifficulty);
-        Debug.Log("Grid Size: "+ gridWidth +" by "+ gridHeight);
-        playButton.SetActive(true);
+        Debug.Log("Grid Size: " + gridWidth + " by " + gridHeight);
+        if (isThemeSelected && isDifficultySelected)
+        {
+            playButton.SetActive(true);
+        }
+    }
+
+    private void UpdateThemeButtonColors()
+    {
+        Color defaultColor = Color.white; // Your default color
+        Color selectedColor = Color.green; // Color for selected button
+
+        animalsButton.GetComponent<Image>().color = (selectedTheme == CardTheme.Animals) ? selectedColor : defaultColor;
+        plantsButton.GetComponent<Image>().color = (selectedTheme == CardTheme.Plants) ? selectedColor : defaultColor;
+    }
+
+    private void UpdatePlayButtonStatus()
+    {
+        playButton.SetActive(isDifficultySelected && isThemeSelected);
     }
 
     public void ShowFields()
@@ -87,7 +144,7 @@ public class DifficultyController : MonoBehaviour
         fieldsObject.SetActive(true);
     }
 
-  public void StartGame()
+    public void StartGame()
     {
         // Deactivate the game setup UI panel
         if (gameSetupPanel != null)
