@@ -101,6 +101,7 @@ MonoBehaviour:
   spriteRenderer: {fileID: 5741518389909385943}
   frontSprite: {fileID: 21300000, guid: 040fc6441fcfff44cae68f90b7c6b796, type: 3}
   backSprite: {fileID: 21300000, guid: 7e701456555f614448e3e1000f132cd2, type: 3}
+  outlineObject: {fileID: 8134906288396519283, guid: 2001153bcfef68c47a0462cc0146619c, type: 3}
 --- !u!61 &4121669521660667825
 BoxCollider2D:
   m_ObjectHideFlags: 0

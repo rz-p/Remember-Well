@@ -14,11 +14,8 @@ public class GameManager : MonoBehaviour
     public GameObject cardParent;
     public GameObject audioController;
     public GameObject endGamePanel;
-<<<<<<< HEAD
     public GameObject hintButton;
 
-=======
->>>>>>> parent of b261762 (Implemented hint feature)
     private int matchedPairsCount = 0;
     private int totalPairs;
     private List<CardManager> selectedCards = new List<CardManager>();
@@ -56,6 +53,7 @@ public class GameManager : MonoBehaviour
         totalPairs = (gridHeight * gridWidth / 2);
         List<Sprite> shuffledSprites = ShuffleAndPairSprites(cardFrontSprites, gridWidth, gridHeight);
         CreateGrid(gridWidth, gridHeight, shuffledSprites);
+        hintButton.SetActive(true);
     }
 
         ResetStopwatch();
@@ -201,7 +199,6 @@ public class GameManager : MonoBehaviour
 
     #region Game Logic
 
-<<<<<<< HEAD
     public void ShowHint()
     {
         List<CardManager> unrevealedCards = FindUnrevealedPairs();
@@ -261,20 +258,15 @@ public class GameManager : MonoBehaviour
         return new List<CardManager>(); // Return an empty list if no pairs are found
     }
 
-=======
->>>>>>> parent of b261762 (Implemented hint feature)
     private void EndGame()
     {
         if (endGamePanel != null)
         {
-<<<<<<< HEAD
             stopwatchStarted = false;
             StopStopwatch();
 
             hintButton.SetActive(false);
 
-=======
->>>>>>> parent of b261762 (Implemented hint feature)
             endGamePanel.SetActive(true);
             timerText.text = $"Time: {FormatTime(elapsedTime)}";
             scoreText.text = $"Score: {score}";
