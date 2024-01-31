@@ -12,6 +12,9 @@ public class GameManager : MonoBehaviour
     private int totalPairs;
     private List<CardManager> selectedCards = new List<CardManager>();
 
+    [SerializeField] ScoreHandler scoreHandler;
+    [SerializeField] string playerName;
+ 
     public void InitializeGame()
     {
         // Access the difficulty and grid size from DifficultyController
