@@ -1,33 +1,52 @@
 using UnityEngine;
 using System.Collections.Generic;
-using System.Collections; // Needed for using List
+using System.Collections;
+using UnityEngine.UI;
+using TMPro;
+using System;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject gridCellPrefab; // Prefab for the grid cells or cards
-    public Sprite[] animalCardSprites; // Assign in Inspector
+    #region Variables
+    public GameObject gridCellPrefab;
+    public Sprite[] animalCardSprites;
     public Sprite[] plantCardSprites;
     public GameObject cardParent;
-
     public GameObject audioController;
     public GameObject endGamePanel;
     public GameObject hintButton;
+
     private int matchedPairsCount = 0;
     private int totalPairs;
     private List<CardManager> selectedCards = new List<CardManager>();
+    private float startTime;
+    private float elapsedTime;
+    private bool stopwatchStarted = false;
+
+    public TextMeshProUGUI timerText;
+    public TextMeshProUGUI scoreText;
+
+    int score;
+    #endregion
+
+    #region Initialization
+    void Start()
+    {
+        score = 0;
+        UpdateScoreText();
+    }
+
+    private void Update()
+    {
+        UpdateTimer();
+    }
 
     public void InitializeGame()
     {
-        Sprite[] cardFrontSprites;
-        if (DifficultyController.selectedTheme == DifficultyController.CardTheme.Animals)
-        {
-            cardFrontSprites = animalCardSprites;
-        }
-        else
-        {
-            cardFrontSprites = plantCardSprites;
-        }
-        // Access the difficulty and grid size from DifficultyController
+        Sprite[] cardFrontSprites = (DifficultyController.selectedTheme == DifficultyController.CardTheme.Animals)
+            ? animalCardSprites
+            : plantCardSprites;
+
         DifficultyController.Difficulty difficulty = DifficultyController.selectedDifficulty;
         int gridWidth = DifficultyController.gridWidth;
         int gridHeight = DifficultyController.gridHeight;
@@ -35,20 +54,26 @@ public class GameManager : MonoBehaviour
         List<Sprite> shuffledSprites = ShuffleAndPairSprites(cardFrontSprites, gridWidth, gridHeight);
         CreateGrid(gridWidth, gridHeight, shuffledSprites);
         hintButton.SetActive(true);
+    
+
+
+        ResetStopwatch();
+
+        timerText.gameObject.SetActive(true);
+        scoreText.gameObject.SetActive(true);
     }
+    #endregion
 
-
+    #region Grid Creation
     private void CreateGrid(int width, int height, List<Sprite> shuffledSprites)
     {
-        float cardWidth = 1.8f; // Width of a card
-        float cardHeight = 2.4f; // Height of a card
-        float spacing = 0.2f; // Spacing between cards
+        float cardWidth = 1.8f;
+        float cardHeight = 2.4f;
+        float spacing = 0.2f;
 
-        // Calculate total grid size
         float totalGridWidth = width * cardWidth + (width - 1) * spacing;
         float totalGridHeight = height * cardHeight + (height - 1) * spacing;
 
-        // Calculate the start position
         Vector3 startPos = new Vector3(-totalGridWidth / 2 + cardWidth / 2, totalGridHeight / 2 - cardHeight / 2, 0);
 
         int spriteIndex = 0;
@@ -57,11 +82,9 @@ public class GameManager : MonoBehaviour
         {
             for (int y = 0; y < height; y++)
             {
-                // Calculate position for each card
                 Vector3 position = new Vector3(startPos.x + x * (cardWidth + spacing), startPos.y - y * (cardHeight + spacing), 0);
                 GameObject newCard = Instantiate(gridCellPrefab, position, Quaternion.identity, cardParent.transform);
 
-                // Set up the card
                 CardManager cardManager = newCard.GetComponent<CardManager>();
                 if (cardManager != null && spriteIndex < shuffledSprites.Count)
                 {
@@ -78,7 +101,6 @@ public class GameManager : MonoBehaviour
         List<Sprite> pairedList = new List<Sprite>();
         System.Random rng = new System.Random();
 
-        // Add each sprite twice
         for (int i = 0; i < numPairs; i++)
         {
             int spriteIndex = rng.Next(sprites.Length);
@@ -86,7 +108,6 @@ public class GameManager : MonoBehaviour
             pairedList.Add(sprites[spriteIndex]);
         }
 
-        // Shuffle
         for (int i = 0; i < pairedList.Count; i++)
         {
             int swapIndex = rng.Next(pairedList.Count);
@@ -97,26 +118,24 @@ public class GameManager : MonoBehaviour
 
         return pairedList;
     }
+    #endregion
 
+    #region Card Selection
     public void CardSelected(CardManager card)
     {
-        // Prevent selecting more cards if two are already selected
         if (selectedCards.Count == 2)
         {
             return;
         }
 
-        // Toggle selection if the same card is clicked again
         if (selectedCards.Contains(card))
         {
             selectedCards.Remove(card);
             return;
         }
 
-        // Add new selection
         selectedCards.Add(card);
 
-        // Check if two cards are selected
         if (selectedCards.Count == 2)
         {
             SetAllCardsClickable(false);
@@ -126,10 +145,8 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator WaitAndCheckMatch()
     {
-        // Wait for seconds
         yield return new WaitForSeconds(0.5f);
 
-        // Check for a match
         CheckForMatch();
         SetAllCardsClickable(true);
     }
@@ -140,31 +157,40 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("Match found!");
             matchedPairsCount++;
-            Debug.Log("Matched Pairs: " + matchedPairsCount + ", Total Pairs: " + totalPairs);
-            // Check for endgame condition
+            Debug.Log($"Matched Pairs: {matchedPairsCount}, Total Pairs: {totalPairs}");
+
             if (matchedPairsCount >= totalPairs)
             {
                 EndGame();
             }
+
             foreach (CardManager card in selectedCards)
             {
                 card.DisableCard();
                 audioController.GetComponent<SFXController>().PlayCorrect();
             }
 
+            score = score + 100;
+            UpdateScoreText();
         }
         else
         {
             Debug.Log("No match!");
-            // Handle no match (e.g., flip cards back)
+
             foreach (CardManager card in selectedCards)
             {
                 card.FlipCard();
                 audioController.GetComponent<SFXController>().PlayFalse();
             }
+
+            if (score > 0)
+            {
+                score = score - 10;
+                UpdateScoreText();
+            }
+
         }
 
-        // Clear the list of selected cards
         selectedCards.Clear();
     }
 
@@ -173,14 +199,12 @@ public class GameManager : MonoBehaviour
         foreach (Transform child in cardParent.transform)
         {
             CardManager cardManager = child.GetComponent<CardManager>();
-            if (cardManager != null)
-            {
-                cardManager.SetClickable(clickable);
-            }
+            cardManager?.SetClickable(clickable);
         }
-
     }
+    #endregion
 
+    #region Game Logic
     public void ShowHint()
     {
         List<CardManager> unrevealedCards = FindUnrevealedPairs();
@@ -240,15 +264,58 @@ public class GameManager : MonoBehaviour
         return new List<CardManager>(); // Return an empty list if no pairs are found
     }
 
-
     private void EndGame()
     {
         if (endGamePanel != null)
         {
+            stopwatchStarted = false;
+            StopStopwatch();
             hintButton.SetActive(false);
             endGamePanel.SetActive(true);
+            timerText.text = $"Time: {FormatTime(elapsedTime)}";
+            scoreText.text = $"Score: {score}";
+        }
+    }
+    #endregion
+
+    #region Stopwatch
+    private String FormatTime(float timeInSeconds) => TimeSpan.FromSeconds(timeInSeconds).ToString("mm':'ss");
+
+    public void StartStopwatch()
+    {
+        stopwatchStarted = true;
+        startTime = Time.time;
+    }
+
+    private void StopStopwatch()
+    {
+        elapsedTime = Time.time - startTime;
+    }
+
+    private void ResetStopwatch()
+    {
+        startTime = 0f;
+        elapsedTime = 0f;
+    }
+    #endregion
+
+    #region Timer
+    private void UpdateTimer()
+    {
+        if (stopwatchStarted)
+        {
+            elapsedTime = Time.time - startTime;
+            timerText.text = $"Time: {TimeSpan.FromSeconds(elapsedTime):mm':'ss}";
         }
     }
 
+    private void UpdateScoreText()
+    {
+        if (scoreText != null)
+        {
+            scoreText.text = $"Score: {score}";
 
+        }
+    }
+    #endregion
 }
