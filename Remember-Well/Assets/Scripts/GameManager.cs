@@ -166,7 +166,7 @@ public class GameManager : MonoBehaviour
                 audioController.GetComponent<SFXController>().PlayCorrect();
             }
 
-            score++;
+            score = score + 100;
             UpdateScoreText();
         }
         else
@@ -178,6 +178,13 @@ public class GameManager : MonoBehaviour
                 card.FlipCard();
                 audioController.GetComponent<SFXController>().PlayFalse();
             }
+
+            if (score > 0)
+            {
+                score = score - 10;
+                UpdateScoreText();
+            }
+
         }
 
         selectedCards.Clear();
@@ -226,14 +233,6 @@ public class GameManager : MonoBehaviour
     {
         startTime = 0f;
         elapsedTime = 0f;
-    }
-    #endregion
-
-    #region Score Calculation
-    int CalculateScore(float elapsedTime)
-    {
-        int baseScore = 1000;
-        return Mathf.Max(0, baseScore - Mathf.RoundToInt(elapsedTime * 10));
     }
     #endregion
 
