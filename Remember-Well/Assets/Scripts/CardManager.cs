@@ -7,7 +7,6 @@ public class CardManager : MonoBehaviour, IPointerClickHandler
 
     public Sprite frontSprite; // Assign in inspector or via script
     public Sprite backSprite; // Assign in inspector
-    private Color originalColor;
 
     private bool isFlipped = false;
     private bool isClickable = true;
@@ -34,7 +33,6 @@ public class CardManager : MonoBehaviour, IPointerClickHandler
     void Start()
     {
         spriteRenderer.sprite = backSprite; // Start with the back sprite
-        originalColor = spriteRenderer.color;
     }
 
     public void SetFrontImage(Sprite sprite)
@@ -64,21 +62,6 @@ public class CardManager : MonoBehaviour, IPointerClickHandler
 
         // Alternatively, you could change the appearance, 
         // or disable certain components instead of the entire GameObject.
-    }
-
-    public void HighlightCard()
-    {
-        spriteRenderer.color = Color.green; // Change color to green
-    }
-
-    public void UnhighlightCard()
-    {
-        spriteRenderer.color = originalColor; // Revert to the original color
-    }
-
-    public bool IsFlipped()
-    {
-        return isFlipped; // Assuming isFlipped is true when the card is face up
     }
 
 }
