@@ -54,7 +54,7 @@ public class GameManager : MonoBehaviour
         List<Sprite> shuffledSprites = ShuffleAndPairSprites(cardFrontSprites, gridWidth, gridHeight);
         CreateGrid(gridWidth, gridHeight, shuffledSprites);
         hintButton.SetActive(true);
-    }
+    
 
 
         ResetStopwatch();
