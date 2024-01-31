@@ -161,6 +161,7 @@ public class DifficultyController : MonoBehaviour
         if (gameManager != null)
         {
             gameManager.InitializeGame();
+            gameManager.StartStopwatch();
         }
         else
         {
