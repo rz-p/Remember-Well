@@ -2,16 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using static PreviousScene;
 
-public class OptionsMenu : MonoBehaviour
-{
-    public void Back(){
-        SceneManager.LoadSceneAsync(PreviousScene.SceneName);
+    public class OptionsMenu : MonoBehaviour
+    {
+        public void BackMenu(){
+            SceneManager.LoadSceneAsync("Main Menu");
+        }
+
+        public void Statistics(){
+            SceneManager.LoadSceneAsync("Statistics");
+        }
+
     }
 
-    public void Statistics(){
-        SceneManager.LoadSceneAsync("Statistics");
-    }
-
-}
