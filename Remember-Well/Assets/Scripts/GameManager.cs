@@ -7,6 +7,7 @@ using System;
 
 public class GameManager : MonoBehaviour
 {
+  
     #region Variables
     public GameObject gridCellPrefab;
     public Sprite[] animalCardSprites;
@@ -26,7 +27,11 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI scoreText;
 
+    public ScoreHandler scoreHandler;
+    public string playerName;
+    
     int score;
+    int mistakes;
     #endregion
 
     #region Initialization
@@ -186,6 +191,7 @@ public class GameManager : MonoBehaviour
             if (score > 0)
             {
                 score = score - 10;
+                mistakes++;
                 UpdateScoreText();
             }
 
@@ -274,6 +280,7 @@ public class GameManager : MonoBehaviour
             endGamePanel.SetActive(true);
             timerText.text = $"Time: {FormatTime(elapsedTime)}";
             scoreText.text = $"Score: {score}";
+            scoreHandler.AddScore(new ScoreElement(playerName, score, FormatTime(elapsedTime), mistakes));
         }
     }
     #endregion
